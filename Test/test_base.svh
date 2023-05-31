@@ -1,16 +1,14 @@
 
 virtual class test_base extends uvm_test;
 
-  my_env  m_env;
-
-  aiueo_ral_pkg::aiueo_block_model m_ral_model;
-
-  virtual my_busif vif;
-
   function new(string name, uvm_component parent);
     super.new(name, parent);
   endfunction
 
+  my_env                            m_env;
+  uvm_sequencer_base                m_sequencer;
+  aiueo_ral_pkg::aiueo_block_model  m_ral_model;
+  virtual my_busif                  vif;
 
   virtual function void build_phase(uvm_phase phase);
     super.build_phase(phase);
@@ -26,8 +24,6 @@ virtual class test_base extends uvm_test;
     m_ral_model.build();
     m_ral_model.reset();
   endfunction
-
-  uvm_sequencer_base  m_sequencer;
 
   virtual function void connect_phase(uvm_phase phase);
     super.connect_phase(phase);

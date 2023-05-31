@@ -43,10 +43,39 @@ package my_sequence_pkg;
       msg = {msg, $sformatf("\n |- param_6 : %0d", this.fld_ralget("CONFIG_AAA","param_6"))};
       `uvm_info(get_name(), msg, UVM_MEDIUM)
 
-      this.start_c_sequence();
-
     endtask
 
   endclass
+
+
+  class unite_sequence extends my_uvm_pkg::my_ral_sequence_base;
+    `uvm_object_utils(unite_sequence)
+  
+    function new(string name="");
+      super.new(name);
+    endfunction
+
+    virtual task body();
+      start_seq1();
+      start_seq2();
+      this.start_c_sequence();
+    endtask
+
+    virtual task start_seq1();
+      example_ral_sequence seq1;
+      seq1 = example_ral_sequence::type_id::create("seq1");
+      seq1.model = this.model;
+      seq1.start(this.get_sequencer(), this);
+    endtask
+
+    virtual task start_seq2();
+      my_uvm_pkg::my_c_ral_sequence seq2;
+      seq2 = my_uvm_pkg::my_c_ral_sequence::type_id::create("seq2");
+      seq2.model = this.model;
+      seq2.start(this.get_sequencer(), this );
+    endtask
+
+  endclass
+
 
 endpackage
