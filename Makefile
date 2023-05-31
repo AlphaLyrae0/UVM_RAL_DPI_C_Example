@@ -111,7 +111,7 @@ $(WORK)/tb_top.sdb            : ./TB/tb_top.sv
 
 .PHONY: clean
 clean:
-	rm -fr xsim.dir axsim.sh dpi.h dpi_lib.so
+	rm -fr xsim.dir .Xil axsim.sh dpi.h dpi_lib.so 
 	rm -fr *.pb
 	rm -rf *.log *.jou *.str
 	rm -fr *.vcd *.wdb
