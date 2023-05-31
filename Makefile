@@ -1,38 +1,57 @@
  VIVADO_DIR := /tools/Xilinx/Vivado/2022.2/bin
  VLOG := $(VIVADO_DIR)/xvlog
  ELAB := $(VIVADO_DIR)/xelab
+ SIM  := $(VIVADO_DIR)/xsim
  XSC  := $(VIVADO_DIR)/xsc
 
  TOP   := tb_top
  WORK  := ./xsim.dir/work
- AXSIM := $(WORK).$(TOP)/axsim ./axsim.sh
+#AXSIM := $(WORK).$(TOP)/axsim ./axsim.sh
+#XSIMK := $(WORK).$(TOP)/xsimk
+ AXSIM := ./xsim.dir/$(TOP).batch/axsim ./axsim.sh
+ XSIMK := ./xsim.dir/$(TOP).debug/xsimk
 
  TEST_NAME := c_ral_test
 
-.PHONY : build build_c run_% all
+.PHONY : build build_c run all run_% gui_%
 all : run_c_ral_test
-run_% : $(AXSIM) dpi_lib.so
-	./axsim.sh --testplusarg "UVM_TESTNAME=$*"
-build     : $(AXSIM)
-build_c   : ./dpi_lib.so
+run_% : 
+	make run TEST_NAME=$*
+gui_% : 
+	make gui TEST_NAME=$*
+run : dpi_lib.so $(AXSIM) 
+	./axsim.sh        --testplusarg "UVM_TESTNAME=$(TEST_NAME)"
+gui : dpi_lib.so $(XSIMK)
+	$(SIM) $(TOP)_gui --testplusarg "UVM_TESTNAME=$(TEST_NAME)" --gui &
+build     :
+	make -B $(AXSIM)
+build_c   :
+	make -B ./dpi_lib.so
 
-$(AXSIM) : $(WORK)/aiueo.sdb
-$(AXSIM) : $(WORK)/my_uvm_pkg.sdb
-$(AXSIM) : $(WORK)/aiueo_ral_pkg.sdb
-$(AXSIM) : $(WORK)/my_agent_pkg.sdb
-$(AXSIM) : $(WORK)/my_env_pkg.sdb
-$(AXSIM) : $(WORK)/my_sequence_pkg.sdb
-$(AXSIM) : $(WORK)/test_lib_pkg.sdb
-$(AXSIM) : $(WORK)/my_busif.sdb
-$(AXSIM) : $(WORK)/tb_top.sdb
+COMPILE_FILES := $(WORK)/aiueo.sdb
+COMPILE_FILES += $(WORK)/my_uvm_pkg.sdb
+COMPILE_FILES += $(WORK)/aiueo_ral_pkg.sdb
+COMPILE_FILES += $(WORK)/my_agent_pkg.sdb
+COMPILE_FILES += $(WORK)/my_env_pkg.sdb
+COMPILE_FILES += $(WORK)/my_sequence_pkg.sdb
+COMPILE_FILES += $(WORK)/test_lib_pkg.sdb
+COMPILE_FILES += $(WORK)/my_busif.sdb
+COMPILE_FILES += $(WORK)/tb_top.sdb
+
+$(AXSIM) : $(COMPILE_FILES)
 	cp -f C/dpi.h ./
 	make dpi_lib.so
-	$(ELAB) $(TOP) -L uvm -timescale 1ns/1ps -standalone -sv_lib dpi_lib -dpiheader dpi.h
+	$(ELAB) $(TOP) -L uvm -timescale 1ns/1ps -sv_lib dpi_lib -dpiheader dpi.h -standalone -snapshot $(TOP).batch
 #$(TARGET) : ./dpi_lib.so
-#	$(ELAB) $(TOP) -L uvm -timescale 1ns/1ps -standalone -sv_lib dpi_lib
+#	$(ELAB) $(TOP) -L uvm -timescale 1ns/1ps -sv_lib dpi_lib -standalone
 #	$(XSC) C/dpi.cpp -o dpi_lib.so
 
-./dpi_lib.so : ./C/C_reg_sequence.cpp dpi.h
+$(XSIMK) : $(COMPILE_FILES)
+	cp -f C/dpi.h ./
+	make dpi_lib.so
+	$(ELAB) $(TOP) -L uvm -timescale 1ns/1ps -sv_lib dpi_lib -dpiheader dpi.h -debug all -snapshot $(TOP).debug
+
+./dpi_lib.so : ./C/C_reg_sequence.cpp ./dpi.h
 	$(XSC) $< -o $@ 
 #	g++ -m32 -fPIC -shared -o dpi_lib.so $^
 #--------------------------------------------------------------------------
