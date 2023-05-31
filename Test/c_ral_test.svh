@@ -7,12 +7,6 @@ class c_ral_test extends test_base;
     super.new(name, parent);
   endfunction
 
-  virtual task run_phase(uvm_phase phase);
-    phase.raise_objection(this);
-    start_sequene();
-    phase.drop_objection(this);
-  endtask
-
   virtual task start_sequene();
     my_uvm_pkg::my_c_ral_sequence seq = my_uvm_pkg::my_c_ral_sequence::type_id::create("my_c_ral_seq");
     seq.model = this.m_ral_model;
