@@ -19,10 +19,10 @@ run_% :
 	make run TEST_NAME=$*
 gui_% : 
 	make gui TEST_NAME=$*
-run : dpi_lib.so $(AXSIM) 
+run : $(AXSIM) dpi_lib.so
 	./axsim.sh        --testplusarg "UVM_TESTNAME=$(TEST_NAME)"
-gui : dpi_lib.so $(XSIMK)
-	$(SIM) $(TOP)_gui --testplusarg "UVM_TESTNAME=$(TEST_NAME)" --gui &
+gui : $(XSIMK) dpi_lib.so
+	$(SIM) $(TOP).debug --testplusarg "UVM_TESTNAME=$(TEST_NAME)" --gui &
 build     :
 	make -B $(AXSIM)
 build_c   :
