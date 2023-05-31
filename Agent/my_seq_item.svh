@@ -2,7 +2,7 @@
 class my_seq_item extends uvm_sequence_item;
     rand    uvm_access_e    acc ;
     rand    bit   [11:0]    addr;
-    rand    logic [ 7:0]    data;
+    rand    logic [31:0]    data;
 
     `uvm_object_utils_begin(my_seq_item)
         `uvm_field_enum( uvm_access_e, acc , UVM_ALL_ON)

@@ -14,7 +14,7 @@
  TEST_NAME := c_ral_test
 
 .PHONY : build build_c run all run_% gui_%
-all : run_c_ral_test
+all : run_example_ral_test run_c_ral_test
 run_% : 
 	make run TEST_NAME=$*
 gui_% : 
@@ -97,6 +97,7 @@ $(WORK)/test_lib_pkg.sdb      : $(WORK)/aiueo_ral_pkg.sdb
 $(WORK)/test_lib_pkg.sdb      : $(WORK)/my_env_pkg.sdb
 $(WORK)/test_lib_pkg.sdb      : $(WORK)/my_sequence_pkg.sdb
 $(WORK)/test_lib_pkg.sdb      : ./Test/test_base.svh
+$(WORK)/test_lib_pkg.sdb      : ./Test/example_ral_test.svh
 $(WORK)/test_lib_pkg.sdb      : ./Test/c_ral_test.svh
 $(WORK)/test_lib_pkg.sdb      : ./Test/test_lib_pkg.sv
 	$(VLOG) -sv $< -L uvm --include ./Test

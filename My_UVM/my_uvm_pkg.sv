@@ -16,15 +16,26 @@ package my_uvm_pkg;
 
         uvm_status_e status;
 
+        bit print_banners = 1;
+
         virtual task pre_body();
+            if (print_banners)
+                `uvm_info(get_name(), "\n============== Start Of Sequence ===================>", UVM_MEDIUM)
             super.pre_body();
             if (this.model == null) begin
                 if(!uvm_config_db#(uvm_reg_block)::get(this.get_sequencer(), this.get_sequence_path(), ral_name, this.model) )
                     `uvm_fatal(get_name(), {ral_name, " was not gotten!!!"})
             end
+            this.model.default_map.set_auto_predict(1);
         endtask
 
         pure virtual task body();
+
+        virtual task post_body();
+            super.post_body();
+            if (print_banners)
+                `uvm_info(get_name(), "\n<============== End Of Sequence =====================", UVM_MEDIUM)
+        endtask
 
         virtual task reg_write(input string reg_name, int data);
           //uvm_reg l_reg = this.model.get_reg_by_name(reg_name);

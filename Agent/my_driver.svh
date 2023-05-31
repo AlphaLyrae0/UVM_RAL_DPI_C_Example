@@ -17,7 +17,10 @@ class my_driver extends uvm_driver #(my_seq_item);
     endfunction
 
     virtual task run_phase(uvm_phase phase);
-        vif.en = 1'b0;
+        vif.en    = 1'b0;
+        vif.we    = 1'b0;
+        vif.wdata =   '0;
+        vif.addr  =   '0;
         @(posedge vif.rst_n);
         @(negedge vif.clk  );
         forever begin

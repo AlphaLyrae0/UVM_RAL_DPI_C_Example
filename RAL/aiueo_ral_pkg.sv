@@ -236,6 +236,7 @@ package aiueo_ral_pkg;
       my_bus_map.add_reg(CONFIG_FFF, 5'h14, "RW");
       my_bus_map.add_reg(CONFIG_GGG, 5'h18, "RW");
       my_bus_map.add_reg(CONFIG_HHH, 5'h1c, "RW");
+      my_bus_map.set_auto_predict(1);
     endfunction
 
   endclass
