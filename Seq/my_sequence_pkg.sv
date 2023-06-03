@@ -64,15 +64,13 @@ package my_sequence_pkg;
     virtual task start_seq1();
       example_ral_sequence seq1;
       seq1 = example_ral_sequence::type_id::create("seq1");
-      seq1.model = this.model;
-      seq1.start(this.get_sequencer(), this);
+      seq1.start_on_ral(this.model, this);
     endtask
 
     virtual task start_seq2();
       my_uvm_pkg::my_c_ral_sequence seq2;
       seq2 = my_uvm_pkg::my_c_ral_sequence::type_id::create("seq2");
-      seq2.model = this.model;
-      seq2.start(this.get_sequencer(), this );
+      seq2.start_on_ral(this.model, this);
     endtask
 
   endclass

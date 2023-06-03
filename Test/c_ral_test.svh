@@ -9,8 +9,7 @@ class c_ral_test extends test_base;
 
   virtual task start_sequene();
     my_uvm_pkg::my_c_ral_sequence seq = my_uvm_pkg::my_c_ral_sequence::type_id::create("my_c_ral_seq");
-    seq.model = this.m_ral_model;
-    seq.start( .sequencer(this.m_sequencer), .parent_sequence(null)  );
+    seq.start_on_ral( this.m_ral_model );
   endtask
 
 endclass

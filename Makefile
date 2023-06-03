@@ -1,15 +1,18 @@
- VIVADO_DIR := /tools/Xilinx/Vivado/2022.2/bin
- VLOG := $(VIVADO_DIR)/xvlog
- ELAB := $(VIVADO_DIR)/xelab
- SIM  := $(VIVADO_DIR)/xsim
- XSC  := $(VIVADO_DIR)/xsc
+ VIVADO_VER := /tools/Xilinx/Vivado/2022.2
+ VLOG := $(VIVADO_VER)/bin/xvlog
+ ELAB := $(VIVADO_VER)/bin/xelab
+ SIM  := $(VIVADO_VER)/bin/xsim
+ XSC  := $(VIVADO_VER)/bin/xsc
 
  TOP   := tb_top
  WORK  := ./xsim.dir/work
 #AXSIM := $(WORK).$(TOP)/axsim ./axsim.sh
 #XSIMK := $(WORK).$(TOP)/xsimk
- AXSIM := ./xsim.dir/$(TOP).batch/axsim ./axsim.sh
+#AXSIM := ./xsim.dir/$(TOP).batch/axsim ./axsim.sh
+ AXSIM := ./xsim.dir/$(TOP).batch/axsim
  XSIMK := ./xsim.dir/$(TOP).debug/xsimk
+
+#export LD_LIBRARY_PATH := ${LD_LIBRARY_PATH}:${VIVADO_VER}/lib/lnx64.o:${VIVADO_VER}/lib/lnx64.o/Default
 
  TEST_NAME := c_ral_test
 
@@ -20,9 +23,11 @@ run_% :
 gui_% : 
 	make gui TEST_NAME=$*
 run : $(AXSIM) dpi_lib.so
-	./axsim.sh        --testplusarg "UVM_TESTNAME=$(TEST_NAME)"
+	./axsim.sh          --testplusarg "UVM_TESTNAME=$(TEST_NAME)" --log $(TEST_NAME).log
+	mv xsim.log xsim_$(TEST_NAME).log
+#	$(AXSIM)            --testplusarg "UVM_TESTNAME=$(TEST_NAME)" --log $(TEST_NAME).log
 gui : $(XSIMK) dpi_lib.so
-	$(SIM) $(TOP).debug --testplusarg "UVM_TESTNAME=$(TEST_NAME)" --gui &
+	$(SIM) $(TOP).debug --testplusarg "UVM_TESTNAME=$(TEST_NAME)" --log $(TEST_NAME).log --gui &
 build     :
 	make -B $(AXSIM)
 build_c   :
@@ -77,38 +82,38 @@ $(WORK)/my_agent_pkg.sdb     : ./Agent/my_agent_pkg.sv
 #--------------------------------------------------------------
 
 #--------------- Env -----------------------------------------
-$(WORK)/my_env_pkg.sdb       : $(WORK)/my_agent_pkg.sdb
 $(WORK)/my_env_pkg.sdb       : ./Env/my_env.svh
 $(WORK)/my_env_pkg.sdb       : ./Env/my_scoreboard.svh
 $(WORK)/my_env_pkg.sdb       : ./Env/my_env_pkg.sv
+	make $(WORK)/my_agent_pkg.sdb
 	$(VLOG) -sv $< -L uvm --include ./Env
 #--------------------------------------------------------------
 
 #--------------- Sequence -------------------------------------
-$(WORK)/my_sequence_pkg.sdb  : $(WORK)/my_uvm_pkg.sdb
-$(WORK)/my_sequence_pkg.sdb  : $(WORK)/my_agent_pkg.sdb
 $(WORK)/my_sequence_pkg.sdb  : ./Seq/my_sequence_pkg.sv
+	make $(WORK)/my_uvm_pkg.sdb
+	make $(WORK)/my_agent_pkg.sdb
 	$(VLOG) -sv $< -L uvm --include ./Seq
 #--------------------------------------------------------------
 
 #--------------- Test -----------------------------------------
-$(WORK)/test_lib_pkg.sdb      : $(WORK)/my_uvm_pkg.sdb
-$(WORK)/test_lib_pkg.sdb      : $(WORK)/aiueo_ral_pkg.sdb
-$(WORK)/test_lib_pkg.sdb      : $(WORK)/my_env_pkg.sdb
-$(WORK)/test_lib_pkg.sdb      : $(WORK)/my_sequence_pkg.sdb
 $(WORK)/test_lib_pkg.sdb      : ./Test/test_base.svh
 $(WORK)/test_lib_pkg.sdb      : ./Test/example_ral_test.svh
 $(WORK)/test_lib_pkg.sdb      : ./Test/c_ral_test.svh
 $(WORK)/test_lib_pkg.sdb      : ./Test/unite_test.svh
 $(WORK)/test_lib_pkg.sdb      : ./Test/test_lib_pkg.sv
+	make $(WORK)/my_uvm_pkg.sdb
+	make $(WORK)/aiueo_ral_pkg.sdb
+	make $(WORK)/my_env_pkg.sdb
+	make $(WORK)/my_sequence_pkg.sdb
 	$(VLOG) -sv $< -L uvm --include ./Test
 #--------------------------------------------------------------
 
 $(WORK)/my_busif.sdb          : ./Agent/my_busif.sv
 	$(VLOG) -sv $< -L uvm
 
-$(WORK)/tb_top.sdb            : $(WORK)/test_lib_pkg.sdb
 $(WORK)/tb_top.sdb            : ./TB/tb_top.sv
+	make $(WORK)/test_lib_pkg.sdb
 	$(VLOG) -sv $< -L uvm
 
 .PHONY: clean

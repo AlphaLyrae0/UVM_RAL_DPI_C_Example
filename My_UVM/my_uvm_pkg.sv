@@ -18,14 +18,24 @@ package my_uvm_pkg;
 
         bit print_banners = 1;
 
-        virtual task pre_body();
-            if (print_banners)
-                `uvm_info(get_name(), "\n============== Start Of Sequence ===================>", UVM_MEDIUM)
-            super.pre_body();
+
+        virtual function void check_model();
             if (this.model == null) begin
                 if(!uvm_config_db#(uvm_reg_block)::get(this.get_sequencer(), this.get_sequence_path(), ral_name, this.model) )
                     `uvm_fatal(get_name(), {ral_name, " was not gotten!!!"})
             end
+        endfunction
+
+        virtual task start_on_ral(uvm_reg_block ral_model, uvm_sequence_base parent=null);
+            this.model = ral_model;
+            this.start(ral_model.default_map.get_sequencer(), parent);
+        endtask
+
+        virtual task pre_body();
+            if (print_banners)
+                `uvm_info(get_name(), "\n============== Start Of Sequence ===================>", UVM_MEDIUM)
+            super.pre_body();
+            check_model();
             this.model.default_map.set_auto_predict(1);
         endtask
 

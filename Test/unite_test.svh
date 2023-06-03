@@ -9,8 +9,7 @@ class unite_test extends test_base;
 
   virtual task start_sequene();
     unite_sequence seq = unite_sequence::type_id::create("top_seq");
-    seq.model = this.m_ral_model;
-    seq.start( .sequencer(this.m_sequencer), .parent_sequence(null)  );
+    seq.start_on_ral( this.m_ral_model );
   endtask
 
 endclass
