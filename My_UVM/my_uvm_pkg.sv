@@ -78,43 +78,47 @@ package my_uvm_pkg;
                `uvm_error(get_name(), {reg_name, " is not found!!"})
                 return 0;
             end
-            return(l_reg.get_mirrored_value(reg_name));
-          //if (mirrored)   return(l_reg.get_mirrored_value(reg_name));
-          //else            return(l_reg.get               (reg_name));
+            return(l_reg.get_mirrored_value());
+          //if (mirrored)   return(l_reg.get_mirrored_value());
+          //else            return(l_reg.get               ());
         endfunction
 
-        virtual function void fld_ralset(input string reg_name, fld_name, int data);
-            uvm_reg l_reg = this.model.get_reg_by_name(reg_name);
+        virtual function uvm_reg_field find_fld (input string name, delimiter=".");
+            uvm_reg         l_reg;
+            uvm_reg_field   l_fld;
+            string reg_name;
+            string fld_name;
+            string split_q[$];
+            uvm_pkg::uvm_split_string(name, delimiter.getc(0), split_q);
+            if (split_q.size() != 2 )
+                `uvm_error(get_name(), {"Illegal Register Field Name, ", name})
+            reg_name = split_q[0];
+            fld_name = split_q[1];
+
+            l_reg = this.model.get_reg_by_name(reg_name);
             if (l_reg == null) begin
                `uvm_error(get_name(), {reg_name, " is not found!!"})
-                return;
+                return (null);
             end
-            else begin
-                uvm_reg_field l_fld = l_reg.get_field_by_name(fld_name);
-                if (l_fld == null) begin
-                   `uvm_error(get_name(), {fld_name, " is not found!!"})
-                    return;
-                end
-                l_fld.set(data);
+
+            l_fld = l_reg.get_field_by_name(fld_name);
+            if (l_fld == null) begin
+                `uvm_error(get_name(), {fld_name, " is not found!!"})
+                return (null);
             end
+
+            return (l_fld);
+
         endfunction
 
-        virtual function int fld_ralget(input string reg_name, fld_name); //, bit mirrored=1);
-            uvm_reg l_reg = this.model.get_reg_by_name(reg_name);
-            if (l_reg == null) begin
-               `uvm_error(get_name(), {reg_name, " is not found!!"})
-                return 0;
-            end
-            else begin
-                uvm_reg_field l_fld = l_reg.get_field_by_name(fld_name);
-                if (l_fld == null) begin
-                   `uvm_error(get_name(), {fld_name, " is not found!!"})
-                    return 0;
-                end
-                return(l_fld.get_mirrored_value(fld_name));
-              //if (mirrored)   return(l_reg.get_mirrored_value(reg_name));
-              //else            return(l_reg.get               (reg_name));
-            end
+        virtual function void fld_ralset(input string name, int data);
+            uvm_reg_field l_fld = find_fld(name);
+            if (l_fld != null) l_fld.set(data);
+        endfunction
+
+        virtual function int fld_ralget(input string name); //, bit mirrored=1);
+            uvm_reg_field l_fld = find_fld(name);
+            if (l_fld != null) return(l_fld.get_mirrored_value());
         endfunction
 
         virtual task reg_update(input string reg_name);
@@ -151,7 +155,6 @@ package my_uvm_pkg;
 
     export "DPI-C" ral_reg_write  = task     reg_write ;
     export "DPI-C" ral_reg_set    = function reg_ralset;
-    export "DPI-C" ral_regfld_set = function reg_fld_ralset;
     export "DPI-C" ral_fld_set    = function fld_ralset;
     export "DPI-C" ral_reg_update = task     reg_update;
 
@@ -183,26 +186,16 @@ package my_uvm_pkg;
         m_ral_seq.reg_ralset (reg_name, data);
     endfunction
 
-    function void reg_fld_ralset (input string reg_fld_name, input int data);
-        string splits[$];
-        uvm_split_string(reg_fld_name, ".", splits);
-        if (splits.size() != 2 ) begin
-            `uvm_error("MY_UVM_PKG", $sformatf("reg_fld_ral_set called with illegal name reg_fld_name : %s", reg_fld_name))
-            return;
-        end
-        m_ral_seq.fld_ralset (splits[0], splits[1], data);
-    endfunction
-
-    function void fld_ralset (input string reg_name, input string fld_name, input int data);
-        m_ral_seq.fld_ralset (reg_name, fld_name, data);
+    function void fld_ralset (input string reg_fld_name, input int data);
+        m_ral_seq.fld_ralset (reg_fld_name, data);
     endfunction
 
     function int reg_ralget (input string reg_name);
         return (m_ral_seq.reg_ralget(reg_name));
     endfunction
 
-    function int fld_ralget (input string reg_name, input string fld_name);
-        return (m_ral_seq.fld_ralget(reg_name, fld_name));
+    function int fld_ralget (input string reg_fld_name);
+        return (m_ral_seq.fld_ralget(reg_fld_name));
     endfunction
     
     task reg_update(input string reg_name);
