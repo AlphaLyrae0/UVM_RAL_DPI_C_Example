@@ -40,25 +40,8 @@ void ral_fld_print(string fldname)
   sv_print(msg.c_str());
 }
 
-//extern "C" void C_reg_sequence(int id) //const char * p_name, int id)
-//extern "C" void C_reg_sequence(const char * p_name, int id)
-int C_reg_sequence(const char * p_name, int id)
+void CONFIG_AAA_field_access(void)
 {
-//int * RDATA;
-  cout << "####################################################" << endl;
-  cout << "  C++ function C_Program() was called from " << p_name << ", " << id << endl;
-  cout << "####################################################" << endl;
-  cout << "----------------------------------------------------" << endl;
-
-//ral_reg_write ("CONFIG_AAA", 5); reg_read_print("CONFIG_AAA");
-  ral_reg_write ("CONFIG_BBB",15); reg_read_print("CONFIG_BBB");
-  ral_reg_write ("CONFIG_CCC", 3); reg_read_print("CONFIG_CCC");
-  ral_reg_write ("CONFIG_DDD",11); reg_read_print("CONFIG_DDD");
-  ral_reg_write ("CONFIG_EEE",33); reg_read_print("CONFIG_EEE");
-  ral_reg_write ("CONFIG_FFF", 5); reg_read_print("CONFIG_FFF");
-  ral_reg_write ("CONFIG_GGG",15); reg_read_print("CONFIG_GGG");
-  ral_reg_write ("CONFIG_HHH", 3); reg_read_print("CONFIG_HHH");
-
   sv_print("");
   sv_print("-------------------------------------");
   sv_print("  CONFIG_AAA Read Access");
@@ -137,13 +120,31 @@ int C_reg_sequence(const char * p_name, int id)
   ral_fld_print ("CONFIG_AAA.param_6");
   ral_fld_print ("CONFIG_AAA.param_7");
   //-----------------------------------------------------
+}
 
-  //---------------- Write CONFIG_XXX------------
-  ral_reg_write ("CONFIG_XXX", 5);
-  //---------------------------------------------
-  //---------------- Read  CONFIG_XXX------------
-  reg_read_print("CONFIG_XXX");    
-  //---------------------------------------------
+//extern "C" void C_reg_sequence(int id) //const char * p_name, int id)
+//extern "C" void C_reg_sequence(const char * p_name, int id)
+int C_reg_sequence(const char * p_name, int id)
+{
+//int * RDATA;
+  cout << "####################################################" << endl;
+  cout << "  C++ function C_Program() was called from " << p_name << ", " << id << endl;
+  cout << "####################################################" << endl;
+  cout << "----------------------------------------------------" << endl;
+
+//ral_reg_write ("CONFIG_AAA", 5); reg_read_print("CONFIG_AAA");
+  ral_reg_write ("CONFIG_BBB",15); reg_read_print("CONFIG_BBB");
+  ral_reg_write ("CONFIG_CCC", 3); reg_read_print("CONFIG_CCC");
+  ral_reg_write ("CONFIG_DDD",11); reg_read_print("CONFIG_DDD");
+  ral_reg_write ("CONFIG_EEE",33); reg_read_print("CONFIG_EEE");
+  ral_reg_write ("CONFIG_FFF", 5); reg_read_print("CONFIG_FFF");
+  ral_reg_write ("CONFIG_GGG",15); reg_read_print("CONFIG_GGG");
+  ral_reg_write ("CONFIG_HHH", 3); reg_read_print("CONFIG_HHH");
+
+  CONFIG_AAA_field_access();
+
+  // Illegal Access
+  ral_reg_write ("CONFIG_XXX", 5); reg_read_print("CONFIG_XXX");    
 
   cout << "----------------------------------------------------" << endl;
   return 1;
