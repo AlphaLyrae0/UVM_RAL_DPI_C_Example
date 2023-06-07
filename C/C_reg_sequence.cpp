@@ -26,6 +26,13 @@ void reg_read_print(string regname)
   sv_print(msg.c_str());
 }
 
+void ral_reg_print(string regname)
+{
+  string msg;
+  msg = regname + " : " + to_string(ral_reg_get(regname.c_str()));
+  sv_print(msg.c_str());
+}
+
 void ral_fld_print(string fldname)
 {
   string msg;
@@ -42,31 +49,21 @@ int C_reg_sequence(const char * p_name, int id)
   cout << "  C++ function C_Program() was called from " << p_name << ", " << id << endl;
   cout << "####################################################" << endl;
   cout << "----------------------------------------------------" << endl;
-  ral_reg_write ("CONFIG_AAA", 5);
-  ral_reg_write ("CONFIG_BBB",15);
-  ral_reg_write ("CONFIG_CCC", 3);
-  ral_reg_write ("CONFIG_DDD",11);
-  ral_reg_write ("CONFIG_EEE",33);
-  ral_reg_write ("CONFIG_FFF", 5);
-  ral_reg_write ("CONFIG_GGG",15);
-  ral_reg_write ("CONFIG_HHH", 3);
-  reg_read_print("CONFIG_AAA");
-  reg_read_print("CONFIG_BBB");
-  reg_read_print("CONFIG_CCC");
-  reg_read_print("CONFIG_DDD");
-  reg_read_print("CONFIG_EEE");
-  reg_read_print("CONFIG_FFF");
-  reg_read_print("CONFIG_GGG");
-  reg_read_print("CONFIG_HHH");
-  //---------------- Write CONFIG_AAA------------
-  ral_fld_set   ("CONFIG_AAA.param_0" ,1);
-  ral_fld_set   ("CONFIG_AAA.param_1", 3);
-  ral_fld_set   ("CONFIG_AAA.param_2", 3);
-  ral_fld_set   ("CONFIG_AAA.param_6", 2);
-  ral_reg_update("CONFIG_AAA");
-  //---------------------------------------------
-  //---------------- Read  CONFIG_AAA------------
-  reg_read_print("CONFIG_AAA");    
+
+//ral_reg_write ("CONFIG_AAA", 5); reg_read_print("CONFIG_AAA");
+  ral_reg_write ("CONFIG_BBB",15); reg_read_print("CONFIG_BBB");
+  ral_reg_write ("CONFIG_CCC", 3); reg_read_print("CONFIG_CCC");
+  ral_reg_write ("CONFIG_DDD",11); reg_read_print("CONFIG_DDD");
+  ral_reg_write ("CONFIG_EEE",33); reg_read_print("CONFIG_EEE");
+  ral_reg_write ("CONFIG_FFF", 5); reg_read_print("CONFIG_FFF");
+  ral_reg_write ("CONFIG_GGG",15); reg_read_print("CONFIG_GGG");
+  ral_reg_write ("CONFIG_HHH", 3); reg_read_print("CONFIG_HHH");
+
+  sv_print("");
+  sv_print("-------------------------------------");
+  sv_print("  CONFIG_AAA Read Access");
+  sv_print("-------------------------------------");
+  sv_print("CONFIG_AAA Before Read");
   ral_fld_print ("CONFIG_AAA.param_0");
   ral_fld_print ("CONFIG_AAA.param_1");
   ral_fld_print ("CONFIG_AAA.param_2");
@@ -74,14 +71,80 @@ int C_reg_sequence(const char * p_name, int id)
   ral_fld_print ("CONFIG_AAA.param_4");
   ral_fld_print ("CONFIG_AAA.param_5");
   ral_fld_print ("CONFIG_AAA.param_6");
-  //---------------------------------------------
+  ral_fld_print ("CONFIG_AAA.param_7");
+  reg_read_print("CONFIG_AAA");
+  sv_print("CONFIG_AAA After Read");
+  ral_fld_print ("CONFIG_AAA.param_0");
+  ral_fld_print ("CONFIG_AAA.param_1");
+  ral_fld_print ("CONFIG_AAA.param_2");
+  ral_fld_print ("CONFIG_AAA.param_3");
+  ral_fld_print ("CONFIG_AAA.param_4");
+  ral_fld_print ("CONFIG_AAA.param_5");
+  ral_fld_print ("CONFIG_AAA.param_6");
+  ral_fld_print ("CONFIG_AAA.param_7");
+
+  //---------------- CONFIG_AAA Field Write ------------
+  sv_print("");
+  sv_print("-------------------------------------");
+  sv_print("  CONFIG_AAA Write Access");
+  sv_print("-------------------------------------");
+  ral_fld_set   ("CONFIG_AAA.param_0" ,255); //8bit
+  ral_fld_set   ("CONFIG_AAA.param_1", 254); //8bit
+  ral_fld_set   ("CONFIG_AAA.param_2",  1); //4bit
+  ral_fld_set   ("CONFIG_AAA.param_3", 15); //4bit
+  ral_fld_set   ("CONFIG_AAA.param_4",  3); //2bit
+  ral_fld_set   ("CONFIG_AAA.param_5",  3); //2bit
+  ral_fld_set   ("CONFIG_AAA.param_6",  2); //2bit
+  ral_fld_set   ("CONFIG_AAA.param_7",  2); //2bit
+  sv_print("CONFIG_AAA Before Update");
+  ral_reg_print ("CONFIG_AAA");
+  ral_fld_print ("CONFIG_AAA.param_0");
+  ral_fld_print ("CONFIG_AAA.param_1");
+  ral_fld_print ("CONFIG_AAA.param_2");
+  ral_fld_print ("CONFIG_AAA.param_3");
+  ral_fld_print ("CONFIG_AAA.param_4");
+  ral_fld_print ("CONFIG_AAA.param_5");
+  ral_fld_print ("CONFIG_AAA.param_6");
+  ral_fld_print ("CONFIG_AAA.param_7");
+  sv_print("CONFIG_AAA Is To Be Updated.");
+  ral_reg_update("CONFIG_AAA");
+  sv_print("CONFIG_AAA Was Updated.");
+  //-----------------------------------------------------
+  sv_print("CONFIG_AAA After Update");
+  ral_reg_print ("CONFIG_AAA");
+  ral_fld_print ("CONFIG_AAA.param_0");
+  ral_fld_print ("CONFIG_AAA.param_1");
+  ral_fld_print ("CONFIG_AAA.param_2");
+  ral_fld_print ("CONFIG_AAA.param_3");
+  ral_fld_print ("CONFIG_AAA.param_4");
+  ral_fld_print ("CONFIG_AAA.param_5");
+  ral_fld_print ("CONFIG_AAA.param_6");
+  ral_fld_print ("CONFIG_AAA.param_7");
+
+  //---------------- CONFIG_AAA Field Read --------------
+  sv_print("");
+  sv_print("-------------------------------------");
+  sv_print("  CONFIG_AAA Read Access");
+  sv_print("-------------------------------------");
+  ral_reg_mirror("CONFIG_AAA");    
+  ral_reg_print ("CONFIG_AAA");
+  ral_fld_print ("CONFIG_AAA.param_0");
+  ral_fld_print ("CONFIG_AAA.param_1");
+  ral_fld_print ("CONFIG_AAA.param_2");
+  ral_fld_print ("CONFIG_AAA.param_3");
+  ral_fld_print ("CONFIG_AAA.param_4");
+  ral_fld_print ("CONFIG_AAA.param_5");
+  ral_fld_print ("CONFIG_AAA.param_6");
+  ral_fld_print ("CONFIG_AAA.param_7");
+  //-----------------------------------------------------
+
   //---------------- Write CONFIG_XXX------------
   ral_reg_write ("CONFIG_XXX", 5);
   //---------------------------------------------
   //---------------- Read  CONFIG_XXX------------
   reg_read_print("CONFIG_XXX");    
   //---------------------------------------------
-//cout << "  RDATA : " << RDATA << endl;
+
   cout << "----------------------------------------------------" << endl;
   return 1;
 }

@@ -47,13 +47,14 @@ package aiueo_ral_pkg;
     rand uvm_reg_field param_5;
     rand uvm_reg_field param_6;
     function void build();
-      param_0 = this.create_field("param_0",  0, 4, "RW", 4'ha);
-      param_1 = this.create_field("param_1",  4, 4, "RW", 4'hb);
-      param_2 = this.create_field("param_2",  8, 1, "RW", 1'h1);
-      param_3 = this.create_field("param_3",  9, 2, "RW", 2'h0);
-      param_4 = this.create_field("param_4", 11, 2, "RW", 2'h0);
-      param_5 = this.create_field("param_5", 13, 2, "RW", 2'h0);
-      param_6 = this.create_field("param_6", 15, 2, "RW", 2'h0);
+      param_0 = this.create_field("param_0",  0, 8, "RW", 8'haa);
+      param_1 = this.create_field("param_1",  8, 8, "RW", 8'hbb);
+      param_2 = this.create_field("param_2", 16, 4, "RW", 4'hc);
+      param_3 = this.create_field("param_3", 20, 4, "RW", 4'hd);
+      param_4 = this.create_field("param_4", 24, 2, "RW", 2'h0);
+      param_5 = this.create_field("param_5", 26, 2, "RW", 2'h0);
+      param_6 = this.create_field("param_6", 28, 2, "RW", 2'h0);
+      param_6 = this.create_field("param_7", 30, 2, "RW", 2'h0);
     endfunction
   endclass
   class CONFIG_BBB_reg_model extends reg_base;
@@ -236,7 +237,9 @@ package aiueo_ral_pkg;
       my_bus_map.add_reg(CONFIG_FFF, 5'h14, "RW");
       my_bus_map.add_reg(CONFIG_GGG, 5'h18, "RW");
       my_bus_map.add_reg(CONFIG_HHH, 5'h1c, "RW");
-      my_bus_map.set_auto_predict(1);
+      this.set_default_map(my_bus_map);
+      default_map.set_auto_predict (1);
+      default_map.set_check_on_read(1);
     endfunction
 
   endclass

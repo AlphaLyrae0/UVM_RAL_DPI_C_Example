@@ -36,7 +36,8 @@ package my_uvm_pkg;
                 `uvm_info(get_name(), "\n============== Start Of Sequence ===================>", UVM_MEDIUM)
             super.pre_body();
             check_model();
-            this.model.default_map.set_auto_predict(1);
+            this.model.default_map.set_auto_predict (1);
+          //this.model.default_map.set_check_on_read(1);
         endtask
 
         pure virtual task body();
@@ -72,15 +73,14 @@ package my_uvm_pkg;
             l_reg.set(data);
         endfunction
 
-        virtual function int reg_ralget(input string reg_name); //, bit mirrored=1);
+        virtual function int reg_ralget(input string reg_name, bit mirrored=1);
             uvm_reg l_reg = this.model.get_reg_by_name(reg_name);
             if (l_reg == null) begin
                `uvm_error(get_name(), {reg_name, " is not found!!"})
                 return 0;
             end
-            return(l_reg.get_mirrored_value());
-          //if (mirrored)   return(l_reg.get_mirrored_value());
-          //else            return(l_reg.get               ());
+            if (mirrored)   return(l_reg.get_mirrored_value());
+            else            return(l_reg.get               ());
         endfunction
 
         virtual function uvm_reg_field find_fld (input string name, delimiter=".");
@@ -113,12 +113,15 @@ package my_uvm_pkg;
 
         virtual function void fld_ralset(input string name, int data);
             uvm_reg_field l_fld = find_fld(name);
-            if (l_fld != null) l_fld.set(data);
+            if (l_fld == null) return;
+            l_fld.set(data);
         endfunction
 
-        virtual function int fld_ralget(input string name); //, bit mirrored=1);
+        virtual function int fld_ralget(input string name, bit mirrored=1);
             uvm_reg_field l_fld = find_fld(name);
-            if (l_fld != null) return(l_fld.get_mirrored_value());
+            if (l_fld == null) return 0;
+            if (mirrored) return(l_fld.get_mirrored_value());
+            else          return(l_fld.get               ());
         endfunction
 
         virtual task reg_update(input string reg_name);
