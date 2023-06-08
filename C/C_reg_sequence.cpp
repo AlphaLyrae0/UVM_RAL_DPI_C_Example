@@ -145,6 +145,7 @@ int C_reg_sequence(const char * p_name, int id)
 
   // Illegal Access
   ral_reg_write ("CONFIG_XXX", 5); reg_read_print("CONFIG_XXX");    
+  ral_fld_print ("CONFIG_HHH.param_999");
 
   cout << "----------------------------------------------------" << endl;
   return 1;
