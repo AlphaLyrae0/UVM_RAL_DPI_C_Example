@@ -72,19 +72,12 @@ $(WORK)/aiueo_ral_pkg.sdb    : ./RAL/aiueo_ral_pkg.sv
 #--------------------------------------------------------------
 
 #--------------- Agent----------------------------------------
-$(WORK)/my_agent_pkg.sdb     : ./Agent/my_agent.svh
-$(WORK)/my_agent_pkg.sdb     : ./Agent/my_driver.svh
-$(WORK)/my_agent_pkg.sdb     : ./Agent/my_monitor.svh
-$(WORK)/my_agent_pkg.sdb     : ./Agent/my_seq_item.svh
-$(WORK)/my_agent_pkg.sdb     : ./Agent/my_adapter.svh
-$(WORK)/my_agent_pkg.sdb     : ./Agent/my_agent_pkg.sv
+$(WORK)/my_agent_pkg.sdb     : ./Agent/my_agent_pkg.sv $(shell ls ./Agent/*.svh)
 	$(VLOG) -sv $< -L uvm --include ./Agent
 #--------------------------------------------------------------
 
 #--------------- Env -----------------------------------------
-$(WORK)/my_env_pkg.sdb       : ./Env/my_env.svh
-$(WORK)/my_env_pkg.sdb       : ./Env/my_scoreboard.svh
-$(WORK)/my_env_pkg.sdb       : ./Env/my_env_pkg.sv
+$(WORK)/my_env_pkg.sdb       : ./Env/my_env_pkg.sv $(shell ls ./Env/*.svh)
 	make $(WORK)/my_agent_pkg.sdb
 	$(VLOG) -sv $< -L uvm --include ./Env
 #--------------------------------------------------------------
@@ -97,11 +90,7 @@ $(WORK)/my_sequence_pkg.sdb  : ./Seq/my_sequence_pkg.sv
 #--------------------------------------------------------------
 
 #--------------- Test -----------------------------------------
-$(WORK)/test_lib_pkg.sdb      : ./Test/test_base.svh
-$(WORK)/test_lib_pkg.sdb      : ./Test/example_ral_test.svh
-$(WORK)/test_lib_pkg.sdb      : ./Test/c_ral_test.svh
-$(WORK)/test_lib_pkg.sdb      : ./Test/unite_test.svh
-$(WORK)/test_lib_pkg.sdb      : ./Test/test_lib_pkg.sv
+$(WORK)/test_lib_pkg.sdb      : ./Test/test_lib_pkg.sv $(shell ls./Test/*.svh)
 	make $(WORK)/my_uvm_pkg.sdb
 	make $(WORK)/aiueo_ral_pkg.sdb
 	make $(WORK)/my_env_pkg.sdb
