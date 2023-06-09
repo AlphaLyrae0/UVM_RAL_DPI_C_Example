@@ -25,7 +25,7 @@ module tb_top;
   always #10 clk = !clk;
 
   initial begin
-    repeat(100) @(negedge clk);
+    repeat(5) @(negedge clk);
     rst_n = 1;
   end
 
