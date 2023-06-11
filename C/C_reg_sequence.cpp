@@ -127,9 +127,9 @@ void CONFIG_AAA_field_access(void)
 int C_reg_sequence(const char * p_name, int id)
 {
 //int * RDATA;
-  cout << "####################################################" << endl;
-  cout << "  C++ function C_Program() was called from " << p_name << ", " << id << endl;
-  cout << "####################################################" << endl;
+  cout << "##################################################################" << endl;
+  cout << "  C++ function C_reg_sequence() was called from [" << p_name << ", " << id << "]" << endl;
+  cout << "##################################################################" << endl;
   cout << "----------------------------------------------------" << endl;
 
 //ral_reg_write ("CONFIG_AAA", 5); reg_read_print("CONFIG_AAA");

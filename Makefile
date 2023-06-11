@@ -44,9 +44,9 @@ COMPILE_FILES += $(WORK)/my_busif.sdb
 COMPILE_FILES += $(WORK)/tb_top.sdb
 
 $(AXSIM) : $(COMPILE_FILES)
-	cp -f C/dpi.h ./
 	make dpi_lib.so
-	$(ELAB) $(TOP) -L uvm -timescale 1ns/1ps -sv_lib dpi_lib -dpiheader dpi.h -standalone -snapshot $(TOP).batch
+	$(ELAB) $(TOP) -L uvm -timescale 1ns/1ps -sv_lib dpi_lib -standalone -snapshot $(TOP).batch
+#	$(ELAB) $(TOP) -L uvm -timescale 1ns/1ps -sv_lib dpi_lib -standalone -snapshot $(TOP).batch -dpiheader dpi.h 
 #$(TARGET) : ./dpi_lib.so
 #	$(ELAB) $(TOP) -L uvm -timescale 1ns/1ps -sv_lib dpi_lib -standalone
 #	$(XSC) C/dpi.cpp -o dpi_lib.so
@@ -54,9 +54,10 @@ $(AXSIM) : $(COMPILE_FILES)
 $(XSIMK) : $(COMPILE_FILES)
 	cp -f C/dpi.h ./
 	make dpi_lib.so
-	$(ELAB) $(TOP) -L uvm -timescale 1ns/1ps -sv_lib dpi_lib -dpiheader dpi.h -debug all -snapshot $(TOP).debug
+	$(ELAB) $(TOP) -L uvm -timescale 1ns/1ps -sv_lib dpi_lib -debug all -snapshot $(TOP).debug
+#	$(ELAB) $(TOP) -L uvm -timescale 1ns/1ps -sv_lib dpi_lib -debug all -snapshot $(TOP).debug -dpiheader dpi.h
 
-./dpi_lib.so : ./C/C_reg_sequence.cpp ./dpi.h
+./dpi_lib.so : ./C/C_reg_sequence.cpp ./C/dpi.h
 	$(XSC) $< -o $@ 
 #	g++ -m32 -fPIC -shared -o dpi_lib.so $^
 #--------------------------------------------------------------------------
