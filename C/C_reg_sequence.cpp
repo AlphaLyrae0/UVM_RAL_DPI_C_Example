@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <iostream>
 #include <string>
+#include <sstream>
+#include <iomanip>
 
 using namespace std;
 
@@ -20,16 +22,20 @@ using namespace std;
 void reg_read_print(string regname)
 {
   int val;
+  ostringstream ss;
   string msg;
   ral_reg_read(regname.c_str(), &val);
-  msg = "#### REGISTER READ VALUE : " + regname + " = " + to_string(val);
+  ss << "0x" << setfill('0') << setw(8) << hex << uppercase << val;
+  msg = "#### REGISTER READ VALUE : " + regname + " = " + ss.str(); //to_string(val);
   sv_print(msg.c_str());
 }
 
 void ral_reg_print(string regname)
 {
+  ostringstream ss;
   string msg;
-  msg = regname + " : " + to_string(ral_reg_get(regname.c_str()));
+  ss << "0x" << setfill('0') << setw(8) << hex << uppercase << ral_reg_get(regname.c_str());
+  msg = regname + " : " + ss.str(); //to_string(ral_reg_get(regname.c_str()));
   sv_print(msg.c_str());
 }
 
