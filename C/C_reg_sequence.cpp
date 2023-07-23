@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <string.h>
 #include <iostream>
 #include <string>
 #include <sstream>
@@ -128,6 +129,49 @@ void CONFIG_AAA_field_access(void)
   //-----------------------------------------------------
 }
 
+void CONFIG_HHH_field_access(void)
+{
+  //---------------- CONFIG_HHH Field Read ------------
+  sv_print("");
+  sv_print("-------------------------------------");
+  sv_print("  CONFIG_HHH Read Access");
+  sv_print("-------------------------------------");
+//reg_read_print("CONFIG_HHH");
+  ral_reg_mirror("CONFIG_HHH");    
+  ral_reg_print ("CONFIG_HHH");
+  ral_fld_print ("CONFIG_HHH.param_0");
+  ral_fld_print ("CONFIG_HHH.param_1");
+  ral_fld_print ("CONFIG_HHH.param_2");
+  ral_fld_print ("CONFIG_HHH.param_3");
+  //-----------------------------------------------------
+
+  //---------------- CONFIG_HHH Field Write ------------
+  sv_print("");
+  sv_print("-------------------------------------");
+  sv_print("  CONFIG_HHH Write Access");
+  sv_print("-------------------------------------");
+  ral_fld_set   ("CONFIG_HHH.param_0" ,10); //4bit
+  ral_fld_set   ("CONFIG_HHH.param_1", 11); //4bit
+  ral_fld_set   ("CONFIG_HHH.param_2", 12); //4bit
+  ral_fld_set   ("CONFIG_HHH.param_3", 13); //4bit
+  ral_reg_update("CONFIG_HHH");
+  sv_print("CONFIG_HHH Was Updated.");
+  //-----------------------------------------------------
+
+  //---------------- CONFIG_HHH Field Read --------------
+  sv_print("");
+  sv_print("-------------------------------------");
+  sv_print("  CONFIG_HHH Read Access");
+  sv_print("-------------------------------------");
+  ral_reg_mirror("CONFIG_HHH");    
+  ral_reg_print ("CONFIG_HHH");
+  ral_fld_print ("CONFIG_HHH.param_0");
+  ral_fld_print ("CONFIG_HHH.param_1");
+  ral_fld_print ("CONFIG_HHH.param_2");
+  ral_fld_print ("CONFIG_HHH.param_3");
+  //-----------------------------------------------------
+}
+
 //extern "C" void C_reg_sequence(int id) //const char * p_name, int id)
 //extern "C" void C_reg_sequence(const char * p_name, int id)
 int C_reg_sequence(const char * p_name, int id)
@@ -138,20 +182,26 @@ int C_reg_sequence(const char * p_name, int id)
   cout << "##################################################################" << endl;
   cout << "----------------------------------------------------" << endl;
 
-//ral_reg_write ("CONFIG_AAA", 5); reg_read_print("CONFIG_AAA");
-  ral_reg_write ("CONFIG_BBB",15); reg_read_print("CONFIG_BBB");
-  ral_reg_write ("CONFIG_CCC", 3); reg_read_print("CONFIG_CCC");
-  ral_reg_write ("CONFIG_DDD",11); reg_read_print("CONFIG_DDD");
-  ral_reg_write ("CONFIG_EEE",33); reg_read_print("CONFIG_EEE");
-  ral_reg_write ("CONFIG_FFF", 5); reg_read_print("CONFIG_FFF");
-  ral_reg_write ("CONFIG_GGG",15); reg_read_print("CONFIG_GGG");
-  ral_reg_write ("CONFIG_HHH", 3); reg_read_print("CONFIG_HHH");
+  if (strcmp(p_name,"c_ral_seq") == 0)
+  {
+  //ral_reg_write ("CONFIG_AAA", 5); reg_read_print("CONFIG_AAA");
+    ral_reg_write ("CONFIG_BBB",15); reg_read_print("CONFIG_BBB");
+    ral_reg_write ("CONFIG_CCC", 3); reg_read_print("CONFIG_CCC");
+    ral_reg_write ("CONFIG_DDD",11); reg_read_print("CONFIG_DDD");
+    ral_reg_write ("CONFIG_EEE",33); reg_read_print("CONFIG_EEE");
+    ral_reg_write ("CONFIG_FFF", 5); reg_read_print("CONFIG_FFF");
+    ral_reg_write ("CONFIG_GGG",15); reg_read_print("CONFIG_GGG");
+    ral_reg_write ("CONFIG_HHH", 3); reg_read_print("CONFIG_HHH");
 
-  CONFIG_AAA_field_access();
+    if (id == 0) CONFIG_AAA_field_access();
 
-  // Illegal Access
-  ral_reg_write ("CONFIG_XXX", 5); reg_read_print("CONFIG_XXX");    
-  ral_fld_print ("CONFIG_HHH.param_999");
+    // Illegal Access
+    ral_reg_write ("CONFIG_XXX", 5); reg_read_print("CONFIG_XXX");    
+    ral_fld_print ("CONFIG_HHH.param_999");
+  }
+
+  if (strcmp(p_name,"unite_seq") == 0) CONFIG_HHH_field_access();
+
 
   cout << "----------------------------------------------------" << endl;
   return 1;

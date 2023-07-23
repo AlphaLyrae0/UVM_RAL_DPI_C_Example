@@ -8,7 +8,7 @@ class unite_test extends test_base;
   endfunction
 
   virtual task start_sequene();
-    unite_sequence seq = unite_sequence::type_id::create("top_seq");
+    unite_sequence seq = unite_sequence::type_id::create("unite_seq");
     seq.start_on_ral( this.m_ral_model );
   endtask
 

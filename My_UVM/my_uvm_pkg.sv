@@ -33,7 +33,7 @@ package my_uvm_pkg;
 
         virtual task pre_body();
             if (print_banners)
-                `uvm_info(get_name(), "\n============== Start Of Sequence ===================>", UVM_MEDIUM)
+                `uvm_info(get_name(), $sformatf("\n============== Start Of Sequence (%s) ===================>",get_sequence_path()), UVM_MEDIUM)
             super.pre_body();
             check_model();
             this.model.default_map.set_auto_predict (1);
@@ -45,7 +45,7 @@ package my_uvm_pkg;
         virtual task post_body();
             super.post_body();
             if (print_banners)
-                `uvm_info(get_name(), "\n<============== End Of Sequence =====================", UVM_MEDIUM)
+                `uvm_info(get_name(), $sformatf("\n<============== End Of Sequence (%s) =====================",get_sequence_path()), UVM_MEDIUM)
         endtask
 
         virtual task reg_write(input string reg_name, int data);

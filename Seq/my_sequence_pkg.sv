@@ -86,7 +86,8 @@ package my_sequence_pkg;
 
     virtual task c_seq();
       my_uvm_pkg::my_c_ral_sequence c_seq;
-      c_seq = my_uvm_pkg::my_c_ral_sequence::type_id::create("c_seq");
+      c_seq = my_uvm_pkg::my_c_ral_sequence::type_id::create("c_ral_seq");
+      c_seq.id = 1;
       c_seq.start_on_ral(this.model, this);
     endtask
 
