@@ -5,7 +5,6 @@
  XSC  := $(VIVADO_VER)/bin/xsc
 
  TOP   := tb_top
- WORK  := ./xsim.dir/work
 #AXSIM := $(WORK).$(TOP)/axsim ./axsim.sh
 #XSIMK := $(WORK).$(TOP)/xsimk
 #AXSIM := ./xsim.dir/$(TOP).batch/axsim ./axsim.sh
@@ -22,89 +21,61 @@ run_% :
 	make run TEST_NAME=$*
 gui_% : 
 	make gui TEST_NAME=$*
-run : $(AXSIM) dpi_lib.so
+run : $(AXSIM) $(DPI_SO)
 	./axsim.sh          --testplusarg "UVM_TESTNAME=$(TEST_NAME)"
 	mv xsim.log xsim_$(TEST_NAME).log
 #	$(AXSIM)            --testplusarg "UVM_TESTNAME=$(TEST_NAME)" --log $(TEST_NAME).log
-gui : $(XSIMK) dpi_lib.so
+gui : $(XSIMK) $(DPI_SO)
 	$(SIM) $(TOP).debug --testplusarg "UVM_TESTNAME=$(TEST_NAME)" --log gui_$(TEST_NAME).log --gui &
-build     :
+build_a     :
 	make -B $(AXSIM)
+build_d     :
+	make -B $(XSIMK)
 build_c   :
-	make -B ./dpi_lib.so
+	make -B $(DPI_SO)
 
-COMPILE_FILES := $(WORK)/aiueo.sdb
-COMPILE_FILES += $(WORK)/my_uvm_pkg.sdb
-COMPILE_FILES += $(WORK)/aiueo_ral_pkg.sdb
-COMPILE_FILES += $(WORK)/my_agent_pkg.sdb
-COMPILE_FILES += $(WORK)/my_env_pkg.sdb
-COMPILE_FILES += $(WORK)/my_sequence_pkg.sdb
-COMPILE_FILES += $(WORK)/test_lib_pkg.sdb
-COMPILE_FILES += $(WORK)/my_busif.sdb
-COMPILE_FILES += $(WORK)/tb_top.sdb
+SRC_FILES += ./DUT/aiueo.sv
+SRC_FILES += ./My_UVM/my_uvm_pkg.sv
+SRC_FILES += ./RAL/aiueo_ral_pkg.sv
+SRC_FILES += ./Agent/my_agent_pkg.sv
+SRC_FILES += ./Agent/my_busif.sv
+SRC_FILES += ./Env/my_env_pkg.sv
+SRC_FILES += ./Seq/my_sequence_pkg.sv
+SRC_FILES += ./Test/test_lib_pkg.sv
+SRC_FILES += ./TB/tb_top.sv
 
-$(AXSIM) : $(COMPILE_FILES)
-	make dpi_lib.so
-	$(ELAB) $(TOP) -L uvm -timescale 1ns/1ps -sv_lib dpi_lib -standalone -snapshot $(TOP).batch
-#	$(ELAB) $(TOP) -L uvm -timescale 1ns/1ps -sv_lib dpi_lib -standalone -snapshot $(TOP).batch -dpiheader dpi.h 
-#$(TARGET) : ./dpi_lib.so
-#	$(ELAB) $(TOP) -L uvm -timescale 1ns/1ps -sv_lib dpi_lib -standalone
-#	$(XSC) C/dpi.cpp -o dpi_lib.so
+INC_FILES += $(shell ls ./Agent/*.svh)
+INC_FILES += $(shell ls ./Env/*.svh)
+INC_FILES += $(shell ls ./Test/*.svh)
+INC_FILES += $(shell ls ./Agent/*.svh)
 
-$(XSIMK) : $(COMPILE_FILES)
-	cp -f C/dpi.h ./
-	make dpi_lib.so
-	$(ELAB) $(TOP) -L uvm -timescale 1ns/1ps -sv_lib dpi_lib -debug all -snapshot $(TOP).debug
-#	$(ELAB) $(TOP) -L uvm -timescale 1ns/1ps -sv_lib dpi_lib -debug all -snapshot $(TOP).debug -dpiheader dpi.h
+INC_OPT += --include ./Agent
+INC_OPT += --include ./Env
+INC_OPT += --include ./Seq
+INC_OPT += --include ./Test
 
-./dpi_lib.so : ./C/C_reg_sequence.cpp ./C/dpi.h
-	$(XSC) $< -o $@ 
+DPI_SO := ./xsim.dir/work/xsc/dpi.so
+$(DPI_SO) : ./C/C_reg_sequence.cpp ./dpi.h
+	$(XSC) $< 
+#./dpi_lib.so : ./C/C_reg_sequence.cpp ./C/dpi.h
+#	$(XSC) $< -o $@ 
 #	g++ -m32 -fPIC -shared -o dpi_lib.so $^
-#--------------------------------------------------------------------------
-$(WORK)/aiueo.sdb            : ./DUT/aiueo.sv
-	$(VLOG) -sv $< -L uvm
 
-$(WORK)/my_uvm_pkg.sdb       : My_UVM/my_uvm_pkg.sv
-	$(VLOG) -sv $< -L uvm
+dpi.h :
+	$(VLOG) -incr -L uvm $(INC_OPT) -sv $(SRC_FILES)
+	$(ELAB) -incr -L uvm $(TOP) -dpiheader dpi.h 
 
-#--------------- RAL -----------------------------------------
-$(WORK)/aiueo_ral_pkg.sdb    : ./RAL/aiueo_ral_pkg.sv
-	$(VLOG) -sv $< -L uvm --include ../rggen-sv-ral
-#--------------------------------------------------------------
+$(AXSIM) : $(SRC_FILES) $(INC_FILES)
+	make $(DPI_SO)
+	$(VLOG) -incr -L uvm $(INC_OPT) -sv $(SRC_FILES)
+	$(ELAB) -incr -L uvm $(TOP) -timescale 1ns/1ps -sv_lib dpi -standalone -snapshot $(TOP).batch
 
-#--------------- Agent----------------------------------------
-$(WORK)/my_agent_pkg.sdb     : ./Agent/my_agent_pkg.sv $(shell ls ./Agent/*.svh)
-	$(VLOG) -sv $< -L uvm --include ./Agent
-#--------------------------------------------------------------
+$(XSIMK) : $(SRC_FILES) $(INC_FILES)
+	make $(DPI_SO)
+	$(VLOG) -incr -L uvm $(INC_OPT) -sv $(SRC_FILES)
+	$(ELAB) -incr -L uvm $(TOP) -timescale 1ns/1ps -sv_lib dpi -snapshot $(TOP).debug -debug all
+#	$(ELAB) -incr -L uvm $(TOP) -timescale 1ns/1ps -sv_lib dpi -snapshot $(TOP).debug -debug all -dpiheader dpi.h
 
-#--------------- Env -----------------------------------------
-$(WORK)/my_env_pkg.sdb       : ./Env/my_env_pkg.sv $(shell ls ./Env/*.svh)
-	make $(WORK)/my_agent_pkg.sdb
-	$(VLOG) -sv $< -L uvm --include ./Env
-#--------------------------------------------------------------
-
-#--------------- Sequence -------------------------------------
-$(WORK)/my_sequence_pkg.sdb  : ./Seq/my_sequence_pkg.sv
-	make $(WORK)/my_uvm_pkg.sdb
-	make $(WORK)/my_agent_pkg.sdb
-	$(VLOG) -sv $< -L uvm --include ./Seq
-#--------------------------------------------------------------
-
-#--------------- Test -----------------------------------------
-$(WORK)/test_lib_pkg.sdb      : ./Test/test_lib_pkg.sv $(shell ls./Test/*.svh)
-	make $(WORK)/my_uvm_pkg.sdb
-	make $(WORK)/aiueo_ral_pkg.sdb
-	make $(WORK)/my_env_pkg.sdb
-	make $(WORK)/my_sequence_pkg.sdb
-	$(VLOG) -sv $< -L uvm --include ./Test
-#--------------------------------------------------------------
-
-$(WORK)/my_busif.sdb          : ./Agent/my_busif.sv
-	$(VLOG) -sv $< -L uvm
-
-$(WORK)/tb_top.sdb            : ./TB/tb_top.sv
-	make $(WORK)/test_lib_pkg.sdb
-	$(VLOG) -sv $< -L uvm
 
 .PHONY: clean
 clean:
