@@ -48,7 +48,7 @@ package my_uvm_pkg;
                 `uvm_info(get_name(), $sformatf("\n<============== End Of Sequence (%s) =====================",get_sequence_path()), UVM_MEDIUM)
         endtask
 
-        virtual task reg_write(input string reg_name, int data);
+        virtual task reg_write(input string reg_name, int unsigned data);
           //uvm_reg l_reg = this.model.get_reg_by_name(reg_name);
           //l_reg.write(.status(status),.value(data), .parent(this));
           //this.write_reg(this.model.get_reg_by_name(reg_name), status, data);
@@ -57,14 +57,14 @@ package my_uvm_pkg;
                `uvm_error(get_name(), {reg_name, " is not found!!"})
         endtask
 
-        virtual task reg_read(input string reg_name, output int data);
+        virtual task reg_read(input string reg_name, output int unsigned data);
           //this.read_reg(this.model.get_reg_by_name(reg_name), status, data);
             this.model.read_reg_by_name( .status(status) , .name(reg_name), .data(data), .parent(this));
             if (status != UVM_IS_OK)
                `uvm_error(get_name(), {reg_name, " is not found!!"})
         endtask
 
-        virtual function void reg_ralset(input string reg_name, int data);
+        virtual function void reg_ralset(input string reg_name, int unsigned data);
             uvm_reg l_reg = this.model.get_reg_by_name(reg_name);
             if (l_reg == null) begin
                `uvm_error(get_name(), {reg_name, " is not found!!"})
@@ -73,7 +73,7 @@ package my_uvm_pkg;
             l_reg.set(data);
         endfunction
 
-        virtual function int reg_ralget(input string reg_name, bit mirrored=1);
+        virtual function int unsigned reg_ralget(input string reg_name, bit mirrored=1);
             uvm_reg l_reg = this.model.get_reg_by_name(reg_name);
             if (l_reg == null) begin
                `uvm_error(get_name(), {reg_name, " is not found!!"})
@@ -111,13 +111,13 @@ package my_uvm_pkg;
 
         endfunction
 
-        virtual function void fld_ralset(input string name, int data);
+        virtual function void fld_ralset(input string name, int unsigned data);
             uvm_reg_field l_fld = find_fld(name);
             if (l_fld == null) return;
             l_fld.set(data);
         endfunction
 
-        virtual function int fld_ralget(input string name, bit mirrored=1);
+        virtual function int unsigned fld_ralget(input string name, bit mirrored=1);
             uvm_reg_field l_fld = find_fld(name);
             if (l_fld == null) return 0;
             if (mirrored) return(l_fld.get_mirrored_value());
