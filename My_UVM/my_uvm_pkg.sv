@@ -12,12 +12,11 @@ package my_uvm_pkg;
             super.new(name);
         endfunction
 
-        string ral_name = "ral_model";
+        string  ral_name = "ral_model";
+        bit     auto_predict  = 1;
+        bit     print_banners = 1;
 
         uvm_status_e status;
-
-        bit print_banners = 1;
-
 
         virtual function void check_model();
             if (this.model == null) begin
@@ -36,7 +35,7 @@ package my_uvm_pkg;
                 `uvm_info(get_name(), $sformatf("\n============== Start Of Sequence (%s) ===================>",get_sequence_path()), UVM_MEDIUM)
             super.pre_body();
             check_model();
-            this.model.default_map.set_auto_predict (1);
+            this.model.default_map.set_auto_predict (auto_predict);
           //this.model.default_map.set_check_on_read(1);
         endtask
 
