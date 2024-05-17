@@ -6,6 +6,12 @@
 package my_uvm_pkg;
     import uvm_pkg::*;
 
+  //uvm_sequencer_base   m_sequencer;
+  //uvm_reg_block        m_ral_model;
+  //uvm_sequencer_base   m_sequence;
+    typedef my_ral_sequence_base;
+    my_ral_sequence_base m_ral_seq;
+
     virtual class my_ral_sequence_base#(type BASE=uvm_sequence#(uvm_reg_item)) extends uvm_reg_sequence#(BASE);
 
         function new (string name="");
@@ -170,11 +176,6 @@ package my_uvm_pkg;
     function void print_msg(input string msg);
         $display(msg);
     endfunction
-
-  //uvm_sequencer_base   m_sequencer;
-  //uvm_reg_block        m_ral_model;
-  //uvm_sequencer_base   m_sequence;
-    my_ral_sequence_base m_ral_seq;
 
     task reg_write(input string reg_name, input int data);
         m_ral_seq.reg_write(reg_name, data);

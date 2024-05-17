@@ -4,7 +4,7 @@ class my_agent extends uvm_agent;
 
     function new (string name, uvm_component parent);
         super.new(name, parent);
-        analysis_port = new("analysis_port", this);
+        this.analysis_port = new("analysis_port", this);
     endfunction : new
 
     uvm_analysis_port #(my_seq_item) analysis_port;
