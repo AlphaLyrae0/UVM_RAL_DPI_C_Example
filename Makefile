@@ -1,10 +1,29 @@
 
-## Aotomatic Invoke
+SIMULATOR := DSIM
+ifdef XILINX_VIVADO
+SIMULATOR := XSIM
+endif
 ifdef DSIM_HOME
+SIMULATOR := DSIM
+endif
+ifdef USE_XSIM
+SIMULATOR := XSIM
+endif
+ifdef USE_DSIM
+SIMULATOR := DSIM
+endif
+
+#------------------ Metrics DSim --------------------------------------
+ifeq ($(SIMULATOR),DSIM)
   include dsim.mk
-else
+endif
+#----------------------------------------------------------------------
+
+#------------------ Vivado XSIM ---------------------------------------
+ifeq ($(SIMULATOR),XSIM)
   include xsim.mk
 endif
+#----------------------------------------------------------------------
 
 ## Manual Invoke
 dsim_% :
@@ -22,5 +41,5 @@ gui_% :
 dump_% : 
 	make dump TEST_NAME=$*
 
-.PHONY: clean_all
+.PHONY: all
 clean_all : dsim_clean xsim_clean
